@@ -1,0 +1,4 @@
+#!/bin/bash
+# This buildpack always matches (triggers for any app)
+echo "custom-buildpack"
+exit 0
